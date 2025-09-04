@@ -1,0 +1,17 @@
+{
+  "name": "fragments",
+  "version": "0.0.1",
+  "description": "Cloud computing API",
+  "main": "index.js",
+  "private":"true",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gssodhi/fragments.git"
+  },
+  "author": "Gurjeet",
+  "license": "UNLICENSED"
+  
+}
