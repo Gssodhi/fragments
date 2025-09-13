@@ -40,7 +40,8 @@ app.get('/', (req, res) => {
 //     console.log('Environment Variables:', process.env);
 //   }
   // Send a 200 'OK' response with info about our repo
-  res.status(200).json({
+  res.
+  status(200).json({
     status: 'ok',
     author,
     // TODO: change this to use your GitHub username!
