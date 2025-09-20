@@ -32,7 +32,7 @@ jobs:
         with:
           # Use node LTS https://github.com/actions/setup-node#supported-version-syntax
           node-version: 'lts/*'
-          # Cache npm dependencies so they don't have to be downloaded next time - https://github.com/actions/setup-node#caching-packages-dependencies
+          # Cache npm ssdependencies so they don't have to be downloaded next time - https://github.com/actions/setup-node#caching-packages-dependencies
           cache: 'npm'
 
       - name: Install node dependencies
