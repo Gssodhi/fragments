@@ -1,5 +1,4 @@
 // src/app.js
-
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -38,44 +37,20 @@ app.use(compression());
 passport.use(authenticate.strategy());
 app.use(passport.initialize());
 
-// Define a simple health check route. If the server is running
-// we'll respond with a 200 OK.  If not, the server isn't healthy.
-// app.get('/', (req, res) => {
-//   // Clients shouldn't cache this response (always request it fresh)
-//   // See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#controlling_caching
-//   res.setHeader('Cache-Control', 'no-cache');
-// //  if (process.env.LOG_LEVEL === 'debug') {
-// //     console.log('Environment Variables:', process.env);
-// //   }
-//   // Send a 200 'OK' response with info about our repo
-//   res.
-//   status(200).json({
-//     status: 'ok',
-//     author,
-//     // TODO: change this to use your GitHub username!
-//     githubUrl: 'https://github.com/Gssodhi/fragments', //done
-//     version,
-//   });
-// });
-// Remove `app.get('/', (req, res) => {...});` and replace with:
+
 
 // Define our routes
 app.use('/', require('./routes'));
+// app.use('/v1', require('./routes/api/index.js'));
+
 // Add 404 middleware to handle any requests for resources that can't be found
 app.use((req, res) => {
   res.status(404).json(createErrorResponse(404, 'not found'));
-  // {
-  //   status: 'error',
-  //   error: {
-  //     message: 'not found',
-  //     code: 404,
-  //   },
-  // });
+
 });
 
-// Add error-handling middleware to deal with anything else
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
+
+app.use((err, req, res,) => {
   // We may already have an error response we can use, but if not,
   // use a generic `500` server error and message.
   const status = err.status || 500;
@@ -85,16 +60,7 @@ app.use((err, req, res, next) => {
   if (status > 499) {
     logger.error({ err }, `Error processing request`);
   }
-
   res.status(status).json(createErrorResponse(status, message));
-  // {
-  //   status: 'error',
-  //   error: {
-  //     message,
-  //     code: status,
-  //   },
-  // });
 });
 
-// Export our `app` so we can access it in server.js
 module.exports = app;

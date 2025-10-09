@@ -1,12 +1,27 @@
 // src/routes/api/get.js
-const { createSuccessResponse } = require('../../response');
+const { Fragment } = require('../../model/fragment');
+const { createSuccessResponse, createErrorResponse } = require('../../response');
+
 /**
- * Get a list of fragments for the current user
+ * GET /fragments - List fragments for the current user
  */
-module.exports = (req, res) => {
-  // TODO: this is just a placeholder. To get something working, return an empty array...
-  res.status(200).json(
-    createSuccessResponse({
-    fragments: [],
-  }));
+module.exports = async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json(createErrorResponse(401, 'Unauthorized'));
+  }
+
+  try {
+    // Use Fragment model to get user's fragments
+    const expand = req.query.expand === '1' || req.query.expand === 'true';
+    const fragments = await Fragment.byUser(req.user, expand);
+    
+    res.status(200).json(
+      createSuccessResponse({
+        fragments: fragments
+      })
+    );
+  } catch (err) {
+    console.error('Error listing fragments:', err);
+    res.status(500).json(createErrorResponse(500, 'Internal server error'));
+  }
 };

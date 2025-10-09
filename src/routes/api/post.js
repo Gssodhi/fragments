@@ -2,7 +2,7 @@
 // src/routes/api/post.js
 const { Fragment } = require('../../model/fragment');
 const { createSuccessResponse, createErrorResponse } = require('../../response');
-const contentType = require('content-type');
+//const contentType = require('content-type');
 
 module.exports = async (req, res) => {
    if (!req.user) {
@@ -10,11 +10,7 @@ module.exports = async (req, res) => {
     }
   try {
     let type;
-    try {
-      ({ type } = contentType.parse(req));
-    } catch (err) {
-      return res.status(415).json(createErrorResponse(415, 'Invalid Content-Type header'));
-    }
+    
 
     // Check if supported
     if (!Fragment.isSupportedType(type)) {
