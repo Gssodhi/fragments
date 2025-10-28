@@ -50,7 +50,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: fragments/Dockerfile
+          dockerfile: Dockerfile
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
