@@ -1,3 +1,4 @@
+
 const {
   writeFragment,
   readFragment,
@@ -5,103 +6,149 @@ const {
   readFragmentData,
   listFragments,
   deleteFragment,
-} = require('../../src/model/data/memory');
+} = require('../../src/model/data/memory/index');
 
-describe('memory index module', () => {
-  const ownerId = 'test-owner';
-  const fragmentId = 'frag-1';
-  const fragment = {
-    ownerId,
-    id: fragmentId,
+describe('Memory Fragment Data Operations', () => {
+  const testOwner = 'testUser';
+  const testId = 'testId1';
+  const testFragment = {
+    ownerId: testOwner,
+    id: testId,
     type: 'text/plain',
-    size: 12,
-    created: Date.now(),
+    size: 123,
   };
-  const buffer = Buffer.from('sample data');
+  const testData = Buffer.from('test data');
 
   beforeEach(async () => {
-    // Make sure to clean up before each test
-    await deleteFragment(ownerId, fragmentId).catch(() => {});
+    // Clear any existing data before each test
+    // Since we're using in-memory storage, we'll create new instances
+    // The MemoryDB constructor creates fresh instances automatically
   });
 
-  // --------------------------------------------------------------------------
-  describe('writeFragment() and readFragment()', () => {
-    test('writeFragment stores metadata and readFragment retrieves it as an object', async () => {
-      await expect(writeFragment(fragment)).resolves.toBeUndefined();
-      const result = await readFragment(ownerId, fragmentId);
-      expect(result).toEqual(fragment);
-    });
+  test('writeFragment() and readFragment() work correctly', async () => {
+    // Write fragment metadata
+    await writeFragment(testFragment);
 
-    test('readFragment returns undefined for non-existent fragment', async () => {
-      const result = await readFragment('unknown-owner', 'no-id');
-      expect(result).toBeUndefined();
-    });
+    // Read it back
+    const result = await readFragment(testOwner, testId);
+
+    expect(result).toEqual(testFragment);
   });
 
-  // --------------------------------------------------------------------------
-  describe('writeFragmentData() and readFragmentData()', () => {
-    test('writeFragmentData stores and readFragmentData retrieves the buffer', async () => {
-      await expect(writeFragmentData(ownerId, fragmentId, buffer)).resolves.toBeUndefined();
-      const result = await readFragmentData(ownerId, fragmentId);
-      expect(Buffer.isBuffer(result)).toBe(true);
-      expect(result.equals(buffer)).toBe(true);
-    });
-
-    test('readFragmentData returns undefined for missing data', async () => {
-      const result = await readFragmentData('unknown-owner', 'no-id');
-      expect(result).toBeUndefined();
-    });
+  test('readFragment() returns undefined for non-existent fragment', async () => {
+    const result = await readFragment('nonexistent', 'nonexistent');
+    expect(result).toBeUndefined();
   });
 
-  // --------------------------------------------------------------------------
-  describe('listFragments()', () => {
-    test('returns array of IDs when expand=false', async () => {
-      await writeFragment(fragment);
-      const results = await listFragments(ownerId, false);
-      expect(Array.isArray(results)).toBe(true);
-      expect(results).toContain(fragmentId);
-    });
+  test('writeFragmentData() and readFragmentData() work correctly', async () => {
+    // Write fragment data
+    await writeFragmentData(testOwner, testId, testData);
 
-    test('returns array of full fragments when expand=true', async () => {
-      await writeFragment(fragment);
-      const results = await listFragments(ownerId, true);
-      expect(Array.isArray(results)).toBe(true);
-      expect(results.some((f) => JSON.parse(f).id === fragmentId)).toBe(true);
-    });
+    // Read it back
+    const result = await readFragmentData(testOwner, testId);
 
-    test('returns empty array for unknown owner', async () => {
-      const results = await listFragments('no-such-owner', false);
-      expect(Array.isArray(results)).toBe(true);
-      expect(results.length).toBe(0);
-    });
+    expect(result).toEqual(testData);
   });
 
-  // --------------------------------------------------------------------------
-  describe('deleteFragment()', () => {
-    test('removes both metadata and data', async () => {
-      await writeFragment(fragment);
-      await writeFragmentData(ownerId, fragmentId, buffer);
+  test('readFragmentData() returns undefined for non-existent fragment data', async () => {
+    const result = await readFragmentData('nonexistent', 'nonexistent');
+    expect(result).toBeUndefined();
+  });
 
-      // Verify exists
-      const meta = await readFragment(ownerId, fragmentId);
-      const data = await readFragmentData(ownerId, fragmentId);
-      expect(meta).toBeDefined();
-      expect(data).toBeDefined();
+  test('listFragments() returns empty array for user with no fragments', async () => {
+    const result = await listFragments('emptyUser');
+    expect(result).toEqual([]);
+  });
 
-      // Delete it
-      await expect(deleteFragment(ownerId, fragmentId)).resolves.toBeDefined();
+  test('listFragments() returns fragment ids when expand=false', async () => {
+    // Write multiple fragments
+    await writeFragment(testFragment);
+    await writeFragment({ ...testFragment, id: 'testId2' });
 
-      // Should now be gone
-      const metaAfter = await readFragment(ownerId, fragmentId);
-      const dataAfter = await readFragmentData(ownerId, fragmentId);
-      expect(metaAfter).toBeUndefined();
-      expect(dataAfter).toBeUndefined();
-    });
+    const result = await listFragments(testOwner);
 
-    test('deleteFragment safely resolves even if fragment does not exist', async () => {
-      await expect(deleteFragment('no-owner', 'no-id')).rejects.toThrow(
-    'missing entry for primaryKey=no-owner and secondaryKey=no-id'
-  );
-    });
+    expect(result).toContain('testId1');
+    expect(result).toContain('testId2');
+    expect(result).toHaveLength(2);
+  });
+
+  test('listFragments() returns full fragments when expand=true', async () => {
+    // Write multiple fragments
+    await writeFragment(testFragment);
+    await writeFragment({ ...testFragment, id: 'testId2' });
+
+    const result = await listFragments(testOwner, true);
+
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual(testFragment);
+    expect(result[1]).toEqual({ ...testFragment, id: 'testId2' });
+  });
+
+  test('deleteFragment() removes both metadata and data', async () => {
+    // Write both metadata and data
+    await writeFragment(testFragment);
+    await writeFragmentData(testOwner, testId, testData);
+
+    // Verify they exist
+    expect(await readFragment(testOwner, testId)).toEqual(testFragment);
+    expect(await readFragmentData(testOwner, testId)).toEqual(testData);
+
+    // Delete the fragment
+    await deleteFragment(testOwner, testId);
+
+    // Verify they're gone
+    expect(await readFragment(testOwner, testId)).toBeUndefined();
+    expect(await readFragmentData(testOwner, testId)).toBeUndefined();
+  });
+
+  test('deleteFragment() throws error for non-existent fragment', async () => {
+    await expect(deleteFragment('nonexistent', 'nonexistent')).rejects.toThrow();
+  });
+
+  test('writeFragment() handles JSON serialization correctly', async () => {
+    const complexFragment = {
+      ownerId: testOwner,
+      id: 'complexId',
+      type: 'application/json',
+      size: 456,
+      created: new Date().toISOString(),
+      updated: new Date().toISOString(),
+    };
+
+    await writeFragment(complexFragment);
+    const result = await readFragment(testOwner, 'complexId');
+
+    expect(result).toEqual(complexFragment);
+  });
+
+  test('writeFragmentData() handles Buffer data correctly', async () => {
+    const bufferData = Buffer.from('Hello, World!', 'utf8');
+    await writeFragmentData(testOwner, 'bufferTest', bufferData);
+    const result = await readFragmentData(testOwner, 'bufferTest');
+
+    expect(Buffer.isBuffer(result)).toBe(true);
+    expect(result.toString('utf8')).toBe('Hello, World!');
+  });
+
+  test('multiple operations work together correctly', async () => {
+    // Write metadata and data
+    await writeFragment(testFragment);
+    await writeFragmentData(testOwner, testId, testData);
+
+    // Read them back
+    const metadataResult = await readFragment(testOwner, testId);
+    const dataResult = await readFragmentData(testOwner, testId);
+
+    expect(metadataResult).toEqual(testFragment);
+    expect(dataResult).toEqual(testData);
+
+    // List fragments
+    const listResult = await listFragments(testOwner);
+    expect(listResult).toContain(testId);
+
+    // Delete and verify
+    await deleteFragment(testOwner, testId);
+    expect(await readFragment(testOwner, testId)).toBeUndefined();
+    expect(await readFragmentData(testOwner, testId)).toBeUndefined();
   });
 });

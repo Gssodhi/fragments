@@ -4,9 +4,8 @@
 // https://github.com/http-auth/http-auth-passport
 
 const auth = require('http-auth');
-//const passport = require('passport');
 const authPassport = require('http-auth-passport');
-//const logger = require('./logger')
+const logger = require('../logger');
 const authorize = require('./auth-middleware');
 // We expect HTPASSWD_FILE to be defined.
 if (!process.env.HTPASSWD_FILE) {
@@ -14,7 +13,7 @@ if (!process.env.HTPASSWD_FILE) {
 }
 
 // Log that we're using Basic Auth
-//Logger.info('Using HTTP Basic Auth for auth');
+logger.info('Using HTTP Basic Auth for auth');
 
 module.exports.strategy = () =>
   // For our Passport authentication strategy, we'll look for a
