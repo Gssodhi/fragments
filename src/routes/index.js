@@ -1,5 +1,6 @@
 // src/routes/index.js
 const express = require('express');
+const { hostname } = require('os');
 const { version, author } = require('../../package.json');
 const { authenticate } = require('../auth');
 // Create a router that we can use to mount our API
@@ -14,7 +15,8 @@ router.get('/', (req, res) => {
     status: 'ok',
     author,
     githubUrl: 'https://github.com/Gssodhi/fragments',
-    version
+    version,
+    hostname: hostname()
   });
 });
 module.exports = router;

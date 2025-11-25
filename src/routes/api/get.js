@@ -1,4 +1,4 @@
- // src/routes/api/get.j
+ // src/routes/api/get.js
 const { Fragment } = require('../../model/fragment');
 const { createSuccessResponse, createErrorResponse } = require('../../response');
 module.exports = async (req, res) => {
