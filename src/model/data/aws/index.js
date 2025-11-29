@@ -169,6 +169,7 @@
 // Create two in-memory databases: one for fragment metadata and the other for raw data
 //const data = new MemoryDB();
 // Initialize the S3 client and commands
+// src/model/data/aws/index.js
 const s3Client = require('./s3Client');
 const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { PutCommand, GetCommand, DeleteCommand, QueryCommand } = require('@aws-sdk/lib-dynamodb');

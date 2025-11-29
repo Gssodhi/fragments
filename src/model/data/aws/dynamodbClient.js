@@ -1,3 +1,4 @@
+//src/model/data/aws/dynamodbClient.js
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
 const logger = require('../../../logger');
