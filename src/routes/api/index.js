@@ -19,7 +19,6 @@ const rawBody = () =>
 const router = express.Router();
 
 router.get('/fragments', require('./get'));  
-//router.get('/fragments', passport.authenticate('basic', { session: false }), require('./get'));
 router.get('/fragments/:id/info', require('./get-info'));
 router.get('/fragments/:id.:ext', require('./get-convert'));
 router.get('/fragments/:id', require('./get-data'));

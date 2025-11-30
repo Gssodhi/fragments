@@ -5,8 +5,15 @@ const { createSuccessResponse, createErrorResponse } = require('../../response')
 const logger = require('../../logger');
 
 module.exports = async (req, res) => {
+  console.log('🔍 === PUT DEBUG ===');
+  console.log('🔍 Full URL:', req.originalUrl);
+  console.log('🔍 Method:', req.method);
+  console.log('🔍 Params:', req.params);
+  console.log('🔍 User:', req.user);
+
   // Check if user is authenticated
   if (!req.user) {
+    console.log('🔍 No user found - unauthorized');
     logger.warn('Unauthorized attempt to update fragment');
     return res.status(401).json(createErrorResponse(401, 'Unauthorized'));
   }
@@ -14,6 +21,7 @@ module.exports = async (req, res) => {
   const ownerId = req.user;
   const { id } = req.params;
 
+  console.log('🔍 Looking up fragment for update:', { ownerId, id });
   try {
     // Parse and validate Content-Type
     let type;
