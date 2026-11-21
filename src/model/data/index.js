@@ -1,6 +1,3 @@
-// // For now, we only have the memory strategy, but we'll add AWS strategies later
-// module.exports = require('./memory');
-
 // src/model/data/index.js
 
 // If the environment sets an AWS Region, we'll use AWS backend

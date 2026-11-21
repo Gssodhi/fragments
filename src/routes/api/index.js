@@ -18,11 +18,11 @@ const rawBody = () =>
   });
 const router = express.Router();
 
-router.get('/fragments', require('./get'));  
+router.get('/fragments', require('./get'));
 router.get('/fragments/:id/info', require('./get-info'));
 router.get('/fragments/:id.:ext', require('./get-convert'));
 router.get('/fragments/:id', require('./get-data'));
 router.post('/fragments', rawBody(), require('./post'));
-router.put('/fragments/:id', rawBody(), require('./put')); 
+router.put('/fragments/:id', rawBody(), require('./put'));
 router.delete('/fragments/:id', require('./delete'));
 module.exports = router;

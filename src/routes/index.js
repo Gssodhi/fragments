@@ -6,7 +6,6 @@ const { authenticate } = require('../auth');
 // Create a router that we can use to mount our API
 const router = express.Router();
 
-
 router.use(`/v1`, authenticate(), require('./api'));
 
 router.get('/', (req, res) => {
@@ -16,7 +15,7 @@ router.get('/', (req, res) => {
     author,
     githubUrl: 'https://github.com/Gssodhi/fragments',
     version,
-    hostname: hostname()
+    hostname: hostname(),
   });
 });
 module.exports = router;

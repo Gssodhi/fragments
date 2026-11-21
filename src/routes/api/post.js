@@ -1,7 +1,8 @@
 // src/routes/api/post.js
 const contentType = require('content-type');
-const { Fragment } = require('../../model/fragment'); 
+const { Fragment } = require('../../model/fragment');
 const { createSuccessResponse, createErrorResponse } = require('../../response');
+const logger = require('../../logger');
 
 module.exports = async (req, res) => {
   // Check if user is authenticated
@@ -9,7 +10,7 @@ module.exports = async (req, res) => {
     return res.status(401).json(createErrorResponse(401, 'Unauthorized'));
   }
 
-  const ownerId = req.user; 
+  const ownerId = req.user;
 
   try {
     // Parse and validate Content-Type
@@ -17,7 +18,7 @@ module.exports = async (req, res) => {
     try {
       const parsed = contentType.parse(req);
       type = parsed.type;
-    } catch{
+    } catch {
       return res.status(415).json(createErrorResponse(415, 'Invalid Content-Type'));
     }
 
@@ -37,18 +38,11 @@ module.exports = async (req, res) => {
       type,
       size: req.body.length,
     });
-    console.log('About to save fragment data...');
-    console.log('Fragment ID:', fragment.id);
-    console.log('Data length:', req.body.length);
-    console.log('Data type:', typeof req.body);
-    console.log('Is Buffer:', Buffer.isBuffer(req.body));
 
     // Save fragment metadata and data
     await fragment.save();
-    console.log('Fragment metadata saved');
-
     await fragment.setData(req.body);
-    console.log('Fragment data saved successfully');
+    logger.debug({ id: fragment.id, type, size: req.body.length }, 'Fragment created');
 
     const apiUrl = process.env.API_URL?.startsWith('http')
       ? process.env.API_URL
@@ -62,7 +56,8 @@ module.exports = async (req, res) => {
         fragment: fragment,
       })
     );
-  } catch{
+  } catch (err) {
+    logger.error({ err }, 'Error creating fragment');
     res.status(500).json(createErrorResponse(500, 'Internal server error'));
   }
 };

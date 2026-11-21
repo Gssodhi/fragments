@@ -36,8 +36,6 @@ app.use(compression());
 passport.use(authenticate.strategy());
 app.use(passport.initialize());
 
-
-
 // Define our routes
 app.use('/', require('./routes'));
 //app.use('/v1', require('./routes/api'));
@@ -45,11 +43,9 @@ app.use('/', require('./routes'));
 // Add 404 middleware to handle any requests for resources that can't be found
 app.use((req, res) => {
   res.status(404).json(createErrorResponse(404, 'not found'));
-
 });
 
-
-app.use((err, req, res,) => {
+app.use((err, req, res) => {
   // We may already have an error response we can use, but if not,
   // use a generic `500` server error and message.
   const status = err.status || 500;

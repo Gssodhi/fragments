@@ -5,8 +5,8 @@
 // variables, something is wrong.  It should have AWS_COGNITO_POOL_ID and
 // AWS_COGNITO_CLIENT_ID together OR HTPASSWD_FILE on its own.
 if (
-  (process.env.AWS_COGNITO_POOL_ID &&
-  process.env.AWS_COGNITO_CLIENT_ID) &&
+  process.env.AWS_COGNITO_POOL_ID &&
+  process.env.AWS_COGNITO_CLIENT_ID &&
   process.env.HTPASSWD_FILE
 ) {
   throw new Error(
@@ -26,4 +26,3 @@ else if (process.env.HTPASSWD_FILE && process.NODE_ENV !== 'production') {
 else {
   throw new Error('missing env vars: no authorization configuration found');
 }
-

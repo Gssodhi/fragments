@@ -1,4 +1,3 @@
-
 const { Fragment } = require('../../src/model/fragment');
 
 // Wait a little after setting data to ensure timestamps are different
